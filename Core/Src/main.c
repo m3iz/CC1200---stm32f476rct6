@@ -129,7 +129,7 @@ void halRfWriteReg(uint16_t regAddr, uint8_t value) {
 
     if (tempExt)
     	{
-    		uint8_t command = CC1200_WRITE | tempExt;
+    		uint8_t command = CC1200_WRITE | CC1200_EXT_ADDR;
     		HAL_SPI_TransmitReceive(&hspi2, &command, &statusByte, 1, HAL_MAX_DELAY);
     		HAL_SPI_Transmit(&hspi2, &tempAddr, 1, HAL_MAX_DELAY);
     	}
@@ -145,37 +145,9 @@ void halRfWriteReg(uint16_t regAddr, uint8_t value) {
     CC1200_CS_HIGH();
 }
 
-void halRfWriteRegEx(uint16_t regAddr, uint8_t value){
-	CC1200_CS_LOW();
-
-	uint8_t tempExt = (uint8_t)(regAddr >> 8);
-	uint8_t tempAddr = (uint8_t)(regAddr & 0x00FF);
-	uint8_t  statusByte;
-
-	if (tempExt)
-	    	{
-	    		uint8_t command = CC1200_WRITE | CC1200_BURST | CC1200_EXT_ADDR;
-	    		HAL_SPI_TransmitReceive(&hspi2, &command, &statusByte, 1, HAL_MAX_DELAY);
-	    		HAL_SPI_Transmit(&hspi2, &tempExt, 1, HAL_MAX_DELAY);
-	    		HAL_SPI_Transmit(&hspi2, &tempAddr, 1, HAL_MAX_DELAY);
-	    	}
-	    	else
-	    	{
-	    		uint8_t command = CC1200_WRITE | CC1200_EXT_ADDR;
-	    		HAL_SPI_TransmitReceive(&hspi2, &command, &statusByte, 1, HAL_MAX_DELAY);
-	    		HAL_SPI_Transmit(&hspi2, &tempAddr,1, HAL_MAX_DELAY);
-	    	}
-
-
-	    HAL_SPI_Transmit(&hspi2, &value, 1, HAL_MAX_DELAY);
-
-	    CC1200_CS_HIGH();
-}
 
 void  CC1200_init(){
 	 for (int i = 0; i < sizeof(preferredSettings) / sizeof(registerSetting_t); ++i) {
-		 	if(preferredSettings[i].regAddr>0x2E)halRfWriteRegEx(preferredSettings[i].regAddr, preferredSettings[i].value);
-		 	else
 	        halRfWriteReg(preferredSettings[i].regAddr, preferredSettings[i].value);
 	    }
 }
@@ -279,8 +251,8 @@ int main(void)
   HAL_GPIO_WritePin(RES_CC_GPIO_Port, RES_CC_Pin, 1);
 
 
-  halRfWriteReg(0x2F1B,0x22);
-  uint8_t partNum = readRegisterEx(0x1B);
+  halRfWriteReg(0x1B,0x22);
+  uint8_t partNum = readRegister(0x1B);
   printf("Part Number: %d\n", partNum);
 
   uint8_t version = readRegister(VERSION_REG);
@@ -289,16 +261,17 @@ int main(void)
 
   CC1200_init();
 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+  uint8_t message[] = "Hello, RF World!";
   while (1)
   {
-	  //uint8_t message[] = "Hello, RF World!";
-	  //transmitMessage(message, sizeof(message) - 1);
-	  CC1200_CS_LOW();
+
+	  transmitMessage(message, sizeof(message) - 1);
+	  /*CC1200_CS_LOW();
 	  uint8_t temp=0x3B;
 	  HAL_SPI_Transmit(&hspi2, &temp, 1, HAL_MAX_DELAY);
 	  CC1200_CS_HIGH();
