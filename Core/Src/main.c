@@ -21,7 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#define CC1201_PA_CFG1 0x2B
+#define CC1201_PA_CFG0	0x2C
+#define CC1201_FS_DSM1 0x2F1A
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,61 +65,60 @@ typedef struct
 	uint8_t   value;
 }registerSetting_t;
 
+
+
 static const registerSetting_t preferredSettings[]=
 {
-  {IOCFG2,            0x06},
-  {SYNC1,             0x6F},
-  {SYNC0,             0x4E},
-  {SYNC_CFG1,         0xE8},
-  {SYNC_CFG0,         0x13},
-  {DEVIATION_M,       0x99},
-  {MODCFG_DEV_E,      0x05},
-  {DCFILT_CFG,        0x26},
-  {PREAMBLE_CFG1,     0x15},
-  {PREAMBLE_CFG0,     0x8A},
-  {IQIC,              0x00},
-  {CHAN_BW,           0x02},
-  {MDMCFG1,           0x42},
-  {MDMCFG0,           0x05},
-  {SYMBOL_RATE2,      0xC9},
-  {SYMBOL_RATE1,      0x99},
-  {SYMBOL_RATE0,      0x99},
-  {AGC_REF,           0x2F},
-  {AGC_CS_THR,        0xEC},
-  {AGC_CFG1,          0x16},
-  {AGC_CFG0,          0x84},
-  {FIFO_CFG,          0x00},
-  {FS_CFG,            0x1A},
-  {PKT_CFG2,          0x20},
-  {PKT_CFG1,          0x83},
-  {PKT_CFG0,          0x20},
-  {PKT_LEN,           0xFF},
-  {IF_MIX_CFG,        0x18},
-  {TOC_CFG,           0x03},
-  {MDMCFG2,           0x00},
-  {FREQ2,             0x57},
-  {FREQ1,             0x73},
-  {FREQ0,             0x33},
-  {IF_ADC1,           0xEE},
-  {IF_ADC0,           0x10},
-  {FS_DIG1,           0x04},
-  {FS_DIG0,           0x50},
-  {FS_CAL1,           0x40},
-  {FS_CAL0,           0x0E},
-  {FS_DIVTWO,         0x03},
-  {FS_DSM0,           0x33},
-  {FS_DVC1,           0xF7},
-  {FS_DVC0,           0x0F},
-  {FS_PFD,            0x00},
-  {FS_PRE,            0x6E},
-  {FS_REG_DIV_CML,    0x1C},
-  {FS_SPARE,          0xAC},
-  {FS_VCO0,           0xB5},
-  {IFAMP,             0x0D},
-  {XOSC5,             0x0E},
-  {XOSC1,             0x03},
+  {CC1201_IOCFG2,            0x06},
+  {CC1201_SYNC1,             0x6F},
+  {CC1201_SYNC0,             0x4E},
+  {CC1201_SYNC_CFG1,         0xE8},
+  {CC1201_SYNC_CFG0,         0x13},
+  {CC1201_DEVIATION_M,       0xCC},
+  {CC1201_MODCFG_DEV_E,      0x08},
+  {CC1201_DCFILT_CFG,        0x26},
+  {CC1201_PREAMBLE_CFG0,     0x8A},
+  {CC1201_IQIC,              0x00},
+  {CC1201_CHAN_BW,           0x02},
+  {CC1201_MDMCFG1,           0x42},
+  {CC1201_MDMCFG0,           0x05},
+  {CC1201_SYMBOL_RATE2,      0xA4},
+  {CC1201_SYMBOL_RATE1,      0x7A},
+  {CC1201_SYMBOL_RATE0,      0xE1},
+  {CC1201_AGC_REF,           0x2F},
+  {CC1201_AGC_CS_THR,        0xEC},
+  {CC1201_AGC_CFG1,          0x16},
+  {CC1201_AGC_CFG0,          0x84},
+  {CC1201_FIFO_CFG,          0x00},
+  {CC1201_FS_CFG,            0x1A},
+  {CC1201_PKT_CFG2,          0x20},
+  {CC1201_PKT_CFG0,          0x20},
+  {CC1201_PA_CFG1,           0x3F},
+  {CC1201_PKT_LEN,           0xFF},
+  {CC1201_IF_MIX_CFG,        0x18},
+  {CC1201_TOC_CFG,           0x03},
+  {CC1201_MDMCFG2,           0x00},
+  {CC1201_FREQ2,             0x57},
+  {CC1201_FREQ1,             0x59},
+  {CC1201_FREQ0,             0x99},
+  {CC1201_IF_ADC1,           0xEE},
+  {CC1201_IF_ADC0,           0x10},
+  {CC1201_FS_DIG1,           0x07},
+  {CC1201_FS_DIG0,           0x50},
+  {CC1201_FS_CAL1,           0x40},
+  {CC1201_FS_CAL0,           0x0E},
+  {CC1201_FS_DIVTWO,         0x03},
+  {CC1201_FS_DSM0,           0x33},
+  {CC1201_FS_DVC0,           0x17},
+  {CC1201_FS_PFD,            0x00},
+  {CC1201_FS_PRE,            0x6E},
+  {CC1201_FS_REG_DIV_CML,    0x1C},
+  {CC1201_FS_SPARE,          0xAC},
+  {CC1201_FS_VCO0,           0xB5},
+  {CC1201_IFAMP,             0x0D},
+  {CC1201_XOSC5,             0x0E},
+  {CC1201_XOSC1,             0x03},
 };
-
 
 
 void halRfWriteReg(uint16_t regAddr, uint8_t value) {
@@ -267,14 +268,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint8_t message[] = "Hello, RF World!";
+  transmitMessage(message, sizeof(message) - 1);
   while (1)
   {
 
-	  transmitMessage(message, sizeof(message) - 1);
-	  /*CC1200_CS_LOW();
+
+	  CC1200_CS_LOW();
 	  uint8_t temp=0x3B;
 	  HAL_SPI_Transmit(&hspi2, &temp, 1, HAL_MAX_DELAY);
 	  CC1200_CS_HIGH();
+	  /*
 	  CC1200_CS_LOW();
 	  temp= CC1200_ENQUEUE_TX_FIFO | CC1200_BURST;
 	  uint8_t status;
@@ -285,7 +288,7 @@ int main(void)
 
 	  		HAL_SPI_TransmitReceive(&hspi2, &temp, &status, 1, HAL_MAX_DELAY);
 	  	}
-	  	CC1200_CS_HIGH();
+	  	CC1200_CS_HIGH();*/
 	  	CC1200_CS_LOW();
 	  	temp=0x35;
 	  	HAL_SPI_Transmit(&hspi2, &temp, 1, HAL_MAX_DELAY);
